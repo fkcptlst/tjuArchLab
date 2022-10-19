@@ -34,10 +34,15 @@ export	BUILD_DIR
 # ********************
 # Rules of Compilation
 # ********************
+all: pwd $(BUILD_DIR)$(TEMU_TARGET)
+
+pwd:
+	# print working directory
+	@echo "Working directory: $(shell pwd)"
 
 $(BUILD_DIR)$(TEMU_TARGET): 
 	@mkdir -p $(BUILD_DIR)
-	$(CC) $(CFLAGS) $(LDFLAGS) -o $@ $(SRCS)
+	$(CC) $(CFLAGS) -o $@ $(SRCS) $(LDFLAGS)
 
 run: $(BUILD_DIR)$(TEMU_TARGET)
 	@./$(BUILD_DIR)$(TEMU_TARGET) $(USER_PROGRAM)
