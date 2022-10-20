@@ -22,7 +22,7 @@ OBJDUMP := $(CROSS_COMPILE)objdump
 CFLAGS := -mips1 -EL
 
 ifeq ($(DEBUG), true)
-CFLAGS += -g
+CFLAGS += -g -ggdb
 endif
 
 OBJECTS := $(TESTCASE_BUILD_DIR)$(USER_PROGRAM).o

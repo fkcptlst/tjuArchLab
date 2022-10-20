@@ -7,6 +7,8 @@
 #include "debug.h"
 #include "macro.h"
 
+#include "golden_trace.h"
+
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>

@@ -24,7 +24,7 @@ SRCS := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/memory/*.c) $(wildcard 
 TEMU_TARGET := temu
 
 ifeq ($(DEBUG), true)
-CFLAGS += -g
+CFLAGS += -g -ggdb
 endif
 
 export	INCLUDE_DIR

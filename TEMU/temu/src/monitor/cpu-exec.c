@@ -44,7 +44,8 @@ void cpu_exec(volatile uint32_t n) {
 		
 #ifdef DEBUG
 		uint32_t pc_temp = pc;
-		if((n & 0xffff) == 0) {
+		if((n & 0xffff) == 0)
+        {
 			
 			fputc('.', stderr);
 		}
@@ -69,7 +70,7 @@ void cpu_exec(volatile uint32_t n) {
 
 
 		if(temu_state != RUNNING) { return; }
-	}
+	} // end of for loop
 
 	if(temu_state == RUNNING) { temu_state = STOP; }
 }
