@@ -10,7 +10,7 @@
 #include <stdint.h>
 #include <assert.h>
 #include <string.h>
-
+#include "golden_trace.h"
 typedef uint8_t bool;
 
 #pragma pack (1)

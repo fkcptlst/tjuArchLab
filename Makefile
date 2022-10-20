@@ -11,7 +11,8 @@ endif
 ifndef BUILD_DIR
 BUILD_DIR := build/
 endif
-DEBUG := false
+DEBUG := true
+#TODO
 
 # Compilation flags
 CC := gcc
@@ -24,7 +25,7 @@ SRCS := $(wildcard $(SRC_DIR)/*.c) $(wildcard $(SRC_DIR)/memory/*.c) $(wildcard 
 TEMU_TARGET := temu
 
 ifeq ($(DEBUG), true)
-CFLAGS += -g
+CFLAGS += -g -ggdb
 endif
 
 export	INCLUDE_DIR
@@ -34,12 +35,15 @@ export	BUILD_DIR
 # ********************
 # Rules of Compilation
 # ********************
+all: $(BUILD_DIR)$(TEMU_TARGET)
 
 $(BUILD_DIR)$(TEMU_TARGET): 
 	@mkdir -p $(BUILD_DIR)
 	$(CC) $(CFLAGS) -o $@ $(SRCS) $(LDFLAGS)
 
 run: $(BUILD_DIR)$(TEMU_TARGET)
+	@(echo "USER_PROGRAM:"$(USER_PROGRAM))
+	@(echo "path:"$(BUILD_DIR)$(TEMU_TARGET))
 	@./$(BUILD_DIR)$(TEMU_TARGET) $(USER_PROGRAM)
 
 clean:

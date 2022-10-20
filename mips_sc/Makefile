@@ -11,7 +11,8 @@ endif
 ifndef TESTCASE_BUILD_DIR
 TESTCASE_BUILD_DIR := build/
 endif
-DEBUG := false
+DEBUG := true
+#TODO
 
 CC :=  $(CROSS_COMPILE)gcc
 AS := $(CROSS_COMPILE)as
@@ -22,7 +23,7 @@ OBJDUMP := $(CROSS_COMPILE)objdump
 CFLAGS := -mips1 -EL
 
 ifeq ($(DEBUG), true)
-CFLAGS += -g
+CFLAGS += -g -ggdb
 endif
 
 OBJECTS := $(TESTCASE_BUILD_DIR)$(USER_PROGRAM).o

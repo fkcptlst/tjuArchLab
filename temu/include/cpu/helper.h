@@ -37,7 +37,7 @@ extern Operands ops_decoded;
 #define op_src1 (&ops_decoded.src1)
 #define op_src2 (&ops_decoded.src2)
 #define op_dest (&ops_decoded.dest)
-#define op_sham (&ops_decoded.sham)
+#define op_sham (ops_decoded.sham)
 
 #ifdef DEBUG
 #define print_asm(...) Assert(snprintf(assembly, 80, __VA_ARGS__) < 80, "buffer overflow!")

@@ -3,5 +3,5 @@
 
 enum { STOP, RUNNING, END };
 extern int temu_state;
-
+int delayed_transfer;
 #endif

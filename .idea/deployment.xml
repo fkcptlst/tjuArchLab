@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="PublishConfigData" remoteFilesAllowedToDisappearOnAutoupload="false">
+    <serverData>
+      <paths name="arch (4f5462ec-6fc2-47ff-a956-93ab2a46a19d)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/home/wjp/Documents/TEMU" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+      <paths name="net_client (78ac4e35-438b-476c-9f3b-6feebc1fb727)">
+        <serverdata>
+          <mappings>
+            <mapping deploy="/tmp/TEMU" local="$PROJECT_DIR$" />
+          </mappings>
+        </serverdata>
+      </paths>
+    </serverData>
+  </component>
+</project>

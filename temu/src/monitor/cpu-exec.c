@@ -1,5 +1,6 @@
 #include "monitor.h"
 #include "helper.h"
+#include "watchpoint.h"
 
 /* The assembly code of instructions executed is only output to the screen
  * when the number of instructions executed is less than this value.
@@ -7,10 +8,12 @@
  * You can modify this value as you want.
  */
 #define MAX_INSTR_TO_PRINT 10
+extern WP *head, *free_;
 
 int temu_state = STOP;
 
 void exec(uint32_t);
+uint32_t expr(char *e, bool *success);
 
 char assembly[80];
 char asm_buf[128];
@@ -28,6 +31,7 @@ void print_bin_instr(uint32_t pc) {
 void cpu_exec(volatile uint32_t n) {
 	
 	uint32_t pc;
+	delayed_transfer = 0;
 	if(temu_state == END) {
 		printf("Program execution has ended. To restart the program, exit TEMU and run again.\n");
 		return;
@@ -53,7 +57,10 @@ void cpu_exec(volatile uint32_t n) {
 		/* Execute one instruction, including instruction fetch,
 		 * instruction decode, and the actual execution. */
 		exec(pc);
-
+		if(delayed_transfer){
+			exec(pc+4);
+			delayed_transfer = 0;
+		}
 		cpu.pc += 4;
 
 #ifdef DEBUG
@@ -66,9 +73,25 @@ void cpu_exec(volatile uint32_t n) {
 #endif
 
 		/* TODO: check watchpoints here. */
+        int flag = 0;
+        WP *head = getHead();
+        while(head!=NULL){
+            int ans = checkNode(head);
+            if(ans == -1){
+                printf("\033[1;31mwatchpoint %d : Invalid expression\n\033[0m", head->NO);flag=1;
+
+            }else if(ans == 0){
+                flag = 1;
+            }
+
+            head = head->next;
+        }
+
+        if(flag) temu_state =STOP;
 
 
-		if(temu_state != RUNNING) { return; }
+
+        if(temu_state != RUNNING) { return; }
 	}
 
 	if(temu_state == RUNNING) { temu_state = STOP; }

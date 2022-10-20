@@ -1,4 +1,5 @@
 #include "trap.h"
+   .set noreorder
    .set nomacro
    .set noat
    .globl main

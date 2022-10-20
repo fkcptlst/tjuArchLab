@@ -1,2 +1,2 @@
 # change the tesctcase name
-USER_PROGRAM := logic
+USER_PROGRAM := mem
