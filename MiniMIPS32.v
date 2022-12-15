@@ -190,7 +190,7 @@ module MiniMIPS32(
     assign cp0_int_i = (cpu_rst_n == `RST_ENABLE) ? 6'b000000 : int;
 
     // for test
-    assign debug_wb_pc = (cpu_rst_n == `RST_ENABLE) ? `PC_INIT : wb_pc_o;
+    assign debug_wb_pc = (cpu_rst_n == `RST_ENABLE) ? `PC_INIT : wb_pc_o; // TODO check here
     assign debug_wb_rf_wnum = (cpu_rst_n == `RST_ENABLE) ? 5'b00000 : wb_wa_o;
 	assign debug_wb_rf_wdata = (cpu_rst_n == `RST_ENABLE) ? 32'h00000000 : wb_wd_o;
 	assign debug_wb_rf_wen = (cpu_rst_n == `RST_ENABLE) ? 4'b0000 : {4{wb_wreg_o}};

@@ -5,7 +5,7 @@ module idexe_reg (
     input  wire 				  cpu_rst_n,
     input   wire    [`STALL_BUS ]   stall,
 
-    // ��������׶ε����?
+    // ��������׶ε����?
     input  wire [`ALUTYPE_BUS  ]  id_alutype,
     input  wire [`ALUOP_BUS    ]  id_aluop,
     input  wire [`REG_BUS      ]  id_src1,
@@ -82,7 +82,7 @@ module idexe_reg (
 			next_delay_o       <= 1'b0;
 			exe_exccode        <= `EXC_NONE;
 		end
-        // ����������׶ε���Ϣ�Ĵ沢����ִ�н׶�?
+        // ����������׶ε���Ϣ�Ĵ沢����ִ�н׶�?
         else if (stall[2] == `NOSTOP) begin
             exe_alutype 	   <= id_alutype;
             exe_aluop 		   <= id_aluop;

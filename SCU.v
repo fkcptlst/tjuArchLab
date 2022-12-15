@@ -6,6 +6,7 @@ module SCU(
     input   wire                stallreq_exe,
     output  wire[`STALL_BUS]    stall
     );
+    // Stall Control Unit
     
     assign stall = (cpu_rst_n == `RST_ENABLE) ? 4'b0000 :
                         (stallreq_exe == `STOP) ? 4'b1111 :
