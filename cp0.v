@@ -38,8 +38,8 @@ module cp0(
     assign cause_o = cause;
     
     //根据异常信息生成清空流水线信号flush
-    assign flush = (cpu_rst_n == `RST_ENABLE) ? `NOFLUSH:
-                   (exccode_i != `EXC_NONE)   ? `FLUSH  : `NOFLUSH;
+    assign flush = (cpu_rst_n == `RST_ENABLE) ? `NOFLUSH:   //复位时不清空流水线
+                   (exccode_i != `EXC_NONE)   ? `FLUSH  : `NOFLUSH;  //产生异常时清空流水线
     
     //生成清空从指令存储器IM中取出的指令信号flush_im
     always @(posedge cpu_clk_50M) begin
@@ -76,12 +76,12 @@ module cp0(
     endtask
     
     //产生异常处理程序入口地址
-    assign cp0_excaddr = (cpu_rst_n == `RST_ENABLE)  ?  `PC_INIT :
-                         (exccode_i == `EXC_ADEL || exccode_i == `EXC_ADES || exccode_i == `EXC_RI  )  ?  `EXC_ADDR :
-                         (exccode_i == `EXC_INT)  ?  `EXC_INT_ADDR:
-                         (exccode_i == `EXC_ERET  &&  waddr == `CP0_EPC && we == `WRITE_ENABLE) ? wdata:
-                         (exccode_i == `EXC_ERET) ? epc:
-                         (exccode_i != `EXC_NONE)    ?  `EXC_ADDR  :  `ZERO_WORD;
+    assign cp0_excaddr = (cpu_rst_n == `RST_ENABLE)  ?  `PC_INIT :  //复位时，异常处理程序入口地址为PC_INIT
+                         (exccode_i == `EXC_ADEL || exccode_i == `EXC_ADES || exccode_i == `EXC_RI  )  ?  `EXC_ADDR :  //产生地址异常时，异常处理程序入口地址为EXC_ADDR
+                         (exccode_i == `EXC_INT)  ?  `EXC_INT_ADDR:  //产生中断异常时，异常处理程序入口地址为EXC_INT_ADDR
+                         (exccode_i == `EXC_ERET  &&  waddr == `CP0_EPC && we == `WRITE_ENABLE) ? wdata:  //产生ERET异常,且写入EPC寄存器
+                         (exccode_i == `EXC_ERET) ? epc:  //产生ERET异常时，异常处理程序入口地址为EPC寄存器的值
+                         (exccode_i != `EXC_NONE)    ?  `EXC_ADDR  :  `ZERO_WORD;  //产生其他异常时，异常处理程序入口地址为EXC_ADDR
 /*
      //更新CP0寄存器数据
      always @ (posedge cpu_clk_50M) begin

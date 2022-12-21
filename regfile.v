@@ -4,29 +4,29 @@ module regfile(
     input  wire 				 cpu_clk_50M,
 	input  wire 				 cpu_rst_n,
 	
-	// å†™ç«¯å£
+	// Ğ´¶Ë¿Ú
 	input  wire  [`REG_ADDR_BUS] wa,
 	input  wire  [`REG_BUS 	   ] wd,
 	input  wire 				 we,
 	
-	// è¯»ç«¯å£1
+	// ¶Á¶Ë¿Ú1
 	input  wire  [`REG_ADDR_BUS] ra1,
 	output reg   [`REG_BUS 	   ] rd1,
 	input  wire 				 re1,
 	
-	// è¯»ç«¯å£2 
+	// ¶Á¶Ë¿Ú2 
 	input  wire  [`REG_ADDR_BUS] ra2,
 	output reg   [`REG_BUS 	   ] rd2,
 	input  wire 			     re2
     );
 
-    //å®šä¹‰32ä¸ª32ä½å¯„å­˜å™¨
+    //¶¨Òå32¸ö32Î»¼Ä´æÆ÷
 	reg [`REG_BUS] 	regs[0:`REG_NUM-1];
 	
 	always @(posedge cpu_clk_50M) begin
 		if (cpu_rst_n == `RST_ENABLE) begin
 			regs[ 0] <= `ZERO_WORD;
-			regs[ 1] <= 32'h10101010;     //æ³¨æ„ï¼šå¯„å­˜å™¨1å’Œ2å¤ä½ååº”è¯¥å‡æ˜¯0x00000000ï¼Œæ­¤å¤„èµ‹äº†å…¶ä»–åˆå€¼æ˜¯å› ä¸ºå¦‚æœåªæœ‰R-å‹æŒ‡ä»¤æ˜¯æ— æ³•ç»™å¯„å­˜å™¨èµ‹å€¼çš„ã€‚å› æ­¤åç»­åŠ å…¥I-å‹æŒ‡ä»¤åå¯æ¢å¤ä¸ºåˆå€¼ä¸º0çš„è®¾ç½®
+			regs[ 1] <= 32'h10101010;     //×¢Òâ£º¼Ä´æÆ÷1ºÍ2¸´Î»ºóÓ¦¸Ã¾ùÊÇ0x00000000£¬´Ë´¦¸³ÁËÆäËû³õÖµÊÇÒòÎªÈç¹ûÖ»ÓĞR-ĞÍÖ¸ÁîÊÇÎŞ·¨¸ø¼Ä´æÆ÷¸³ÖµµÄ¡£Òò´ËºóĞø¼ÓÈëI-ĞÍÖ¸Áîºó¿É»Ö¸´Îª³õÖµÎª0µÄÉèÖÃ
 			regs[ 2] <= 32'h01011111;
 			regs[ 3] <= `ZERO_WORD;
 			regs[ 4] <= `ZERO_WORD;
@@ -64,8 +64,8 @@ module regfile(
 		end
 	end
 	
-	//è¯»ç«¯å£1çš„è¯»æ“ä½œ 
-	// ra1æ˜¯è¯»åœ°å€ã€waæ˜¯å†™åœ°å€ã€weæ˜¯å†™ä½¿èƒ½ã€wdæ˜¯è¦å†™å…¥çš„æ•°æ® 
+	//¶Á¶Ë¿Ú1µÄ¶Á²Ù×÷ 
+	// ra1ÊÇ¶ÁµØÖ·¡¢waÊÇĞ´µØÖ·¡¢weÊÇĞ´Ê¹ÄÜ¡¢wdÊÇÒªĞ´ÈëµÄÊı¾İ 
 	always @(*) begin
 		if (cpu_rst_n == `RST_ENABLE)
 			rd1 <= `ZERO_WORD;
@@ -81,8 +81,8 @@ module regfile(
 			rd1 <= `ZERO_WORD;
 	end
 	
-	//è¯»ç«¯å£2çš„è¯»æ“ä½œ 
-	// ra2æ˜¯è¯»åœ°å€ã€waæ˜¯å†™åœ°å€ã€weæ˜¯å†™ä½¿èƒ½ã€wdæ˜¯è¦å†™å…¥çš„æ•°æ® 
+	//¶Á¶Ë¿Ú2µÄ¶Á²Ù×÷ 
+	// ra2ÊÇ¶ÁµØÖ·¡¢waÊÇĞ´µØÖ·¡¢weÊÇĞ´Ê¹ÄÜ¡¢wdÊÇÒªĞ´ÈëµÄÊı¾İ 
 	always @(*) begin
 		if (cpu_rst_n == `RST_ENABLE)
 			rd2 <= `ZERO_WORD;
