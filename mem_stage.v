@@ -2,7 +2,7 @@
 
 module mem_stage (
     input  wire 				        cpu_rst_n,
-    // ´ÓÖ´ÐÐ½×¶Î»ñµÃµÄÐÅÏ¢
+    // ï¿½ï¿½Ö´ï¿½Ð½×¶Î»ï¿½Ãµï¿½ï¿½ï¿½Ï¢
     input  wire [`ALUOP_BUS     ]       mem_aluop_i,
     input  wire [`REG_ADDR_BUS  ]       mem_wa_i,
     input  wire                         mem_wreg_i,
@@ -27,7 +27,7 @@ module mem_stage (
 	input  wire [`WORD_BUS     ]  cp0_status,
 	input  wire [`WORD_BUS     ]  cp0_cause,
     
-    // ËÍÖÁÐ´»Ø½×¶ÎµÄÐÅÏ¢
+    // ï¿½ï¿½ï¿½ï¿½Ð´ï¿½Ø½×¶Îµï¿½ï¿½ï¿½Ï¢
     output wire [`REG_ADDR_BUS  ]       mem_wa_o,
     output wire [`ALUOP_BUS     ]       mem_aluop_o,
     output wire                         mem_wreg_o,
@@ -56,25 +56,26 @@ module mem_stage (
 	output wire [`INST_ADDR_BUS ] cp0_badvaddr
     );
 
-    // Èç¹ûµ±Ç°²»ÊÇ·Ã´æÖ¸Áî£¬ÔòÖ»ÐèÒª°Ñ´ÓÖ´ÐÐ½×¶Î»ñµÃµÄÐÅÏ¢Ö±½ÓÊä³ö
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ç·Ã´ï¿½Ö¸ï¿½î£¬ï¿½ï¿½Ö»ï¿½ï¿½Òªï¿½Ñ´ï¿½Ö´ï¿½Ð½×¶Î»ï¿½Ãµï¿½ï¿½ï¿½Ï¢Ö±ï¿½ï¿½ï¿½ï¿½ï¿½
     assign mem_wa_o     = (cpu_rst_n == `RST_ENABLE) ? 5'b0:mem_wa_i;
     assign mem_wreg_o   = (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_wreg_i;
     assign mem_dreg_o   = (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_wd_i;
 	assign mem_whilo_o 	= (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_whilo_i;
 	assign mem_hilo_o 	= (cpu_rst_n == `RST_ENABLE) ? 64'b0:mem_hilo_i;
-	assign daddr		= (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD : (32'h1fffffff&mem_wd_i);
+	assign daddr		= (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD : (32'h1fffffff&mem_wd_i);  // daddr is the address of the data to be read or written
 	assign mem_mreg_o	= (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_mreg_i;
 	
-	//memÇ°ÍÆ¸øid
+	//memÇ°ï¿½Æ¸ï¿½id
 	assign mem2id_wd_o  = (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD:mem_wd_i;
 	assign mem2id_wreg_o   = (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_wreg_i;
 	assign mem2id_wa_o     = (cpu_rst_n == `RST_ENABLE) ? 5'b0:mem_wa_i;
 	
     assign mem_aluop_o = (cpu_rst_n == `RST_ENABLE) ? 8'b0 : mem_aluop_i;	
 	
-	// ½«Òý·¢µØÖ·´íÎóÒì³£µÄµØÖ·ËÍµ½BadVaddr  
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½ì³£ï¿½Äµï¿½Ö·ï¿½Íµï¿½BadVaddr  
     assign cp0_badvaddr = (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD :
-                          (mem_exccode_o == `EXC_ADES || mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] == 2'b00) ? daddr :
+                        //   (mem_exccode_o == `EXC_ADES || mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] == 2'b00) ? daddr :  //TODOL check
+						(mem_exccode_o == `EXC_ADES || mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] == 2'b00) ? mem_wd_i :
                           (mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] != 2'b00) ? mem_pc_i : `ZERO_WORD; 
 	
 	assign dce = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :

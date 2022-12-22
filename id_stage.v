@@ -165,8 +165,8 @@ module id_stage(
 	wire inst_jr  = inst_reg & ~func[5] & ~func[4] &  func[3] & ~func[2] & ~func[1] & ~func[0];//001_000
 	wire inst_jalr  = inst_reg & ~func[5] & ~func[4] &  func[3] & ~func[2] & ~func[1] &  func[0];//001_001
     
-    wire inst_mfc0 = ~op[5] & op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0] & ~rs[4] & ~rs[3] & ~rs[2] & ~rs[1] & ~rs[0];//010000 rs == 00000
-	wire inst_mtc0 = ~op[5] & op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0] & ~rs[4] & ~rs[3] & rs[2] & ~rs[1] & ~rs[0];//010000 rs == 00100
+    wire inst_mfc0 = ~op[5] & op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0] & ~rs[4] & ~rs[3] & ~rs[2] & ~rs[1] & ~rs[0]; //010_000 rs == 00000
+	wire inst_mtc0 = ~op[5] & op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0] & ~rs[4] & ~rs[3] & rs[2] & ~rs[1] & ~rs[0];  //010_000 rs == 00100
 	wire inst_eret = ~op[5] & op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0] & ~func[5] & func[4] & func[3] & ~func[2] & ~func[1] & ~func[0];//010000 func == 011000
 	wire inst_syscall = inst_reg & ~func[5] & ~func[4] & func[3] & func[2] & ~func[1] & ~func[0];//001100
 	wire inst_break = inst_reg & ~func[5] & ~func[4] & func[3] & func[2] & ~func[1] & func[0];//001101

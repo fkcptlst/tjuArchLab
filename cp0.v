@@ -53,7 +53,7 @@ module cp0(
     
     //处理异常
     task do_exc; begin
-        if(status[1] == 0) begin
+        if(status[1] == 0) begin  // 
             if(in_delay_i) begin
                 cause[31] <= 1;
                 epc       <= pc_i - 4;
@@ -144,6 +144,11 @@ module cp0(
                             `CP0_EPC: epc <= wdata;
                         endcase
                     end
+                // `EXC_ADES:       // TODO 地址异常
+                //     begin
+                //         badvaddr <= wdata;
+                //         do_exc();
+                //     end
                 `EXC_ERET:       // ERET指令
                     do_eret();
                 default:        // 异常发生时，处理对应异常

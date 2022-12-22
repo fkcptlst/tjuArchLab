@@ -330,7 +330,7 @@ module MiniMIPS32(
         .mem_wa_o(mem_wa_o), .mem_wreg_o(mem_wreg_o), .mem_dreg_o(mem_dreg_o), .mem_aluop_o(mem_aluop_o),
 		.mem_whilo_o(mem_whilo_o),.mem_hilo_o(mem_hilo_o),.mem_mreg_o(mem_mreg_o),
 		.we(we),.din(din),.daddr(daddr),.dce(dce),.dre(dre),
-		.cp0_badvaddr(cp0_badvaddr),
+		.cp0_badvaddr(cp0_BadVaddr),
 		
 		.mem2id_wd_o(mem2id_wd_o),.mem2id_wreg_o(mem2id_wreg_o),.mem2id_wa_o(mem2id_wa_o),
 		
