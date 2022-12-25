@@ -2,7 +2,6 @@ func_test/cpu132_gettrace/*
 func_test/soc_sram_func/*
 func_test/soft_c/*
 func_test/soft_func/*
-func_test/soc_axi_func/testbench/*
 func_test/soc_axi_func/run_vivado/*
 
 # VirtualBox
