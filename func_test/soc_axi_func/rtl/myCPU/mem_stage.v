@@ -1,7 +1,7 @@
 `include "defines.v"
 
 module mem_stage (
-    input  wire 				        cpu_rst_n,
+    input  wire 				cpu_rst_n,
     // 从执行阶段获得的信息
     input  wire [`ALUOP_BUS     ]       mem_aluop_i,
     input  wire [`REG_ADDR_BUS  ]       mem_wa_i,
@@ -12,21 +12,6 @@ module mem_stage (
 	input  wire 				        mem_mreg_i,
 	input  wire [`REG_BUS 	  ] 		mem_din_i,
     
-    input  wire                   cp0_we_i,
-	input  wire [`REG_ADDR_BUS]   cp0_waddr_i,
-	input  wire [`REG_BUS     ]   cp0_wdata_i,
-	
-	input  wire                   wb2mem_cp0_we,
-	input  wire [`REG_ADDR_BUS]   wb2mem_cp0_wa,
-	input  wire [`REG_BUS     ]   wb2mem_cp0_wd,
-	
-	input  wire [`INST_ADDR_BUS]  mem_pc_i,
-	input  wire                   mem_in_delay_i,
-	input  wire [`EXC_CODE_BUS ]  mem_exccode_i,
-	
-	input  wire [`WORD_BUS     ]  cp0_status,
-	input  wire [`WORD_BUS     ]  cp0_cause,
-    
     // 送至写回阶段的信息
     output wire [`REG_ADDR_BUS  ]       mem_wa_o,
     output wire [`ALUOP_BUS     ]       mem_aluop_o,
@@ -35,16 +20,25 @@ module mem_stage (
 	output wire                         mem_whilo_o,
 	output wire [`DOUBLE_REG_BUS]       mem_hilo_o,
 	output wire 				        mem_mreg_o,
+	output wire [`BSEL_BUS 		]       dre,
 	
 	output wire [`REG_BUS       ]       mem2id_wd_o,
 	output wire                         mem2id_wreg_o,
 	output wire [`REG_ADDR_BUS  ]       mem2id_wa_o,
 	
-	output wire [3:0  ]                  we,
-	output wire [`REG_BUS 	    ] 		 din,
-	output wire [`REG_BUS       ]        daddr,
-	output wire 				         dce,
-	output wire [`BSEL_BUS 		]        dre,
+	input  wire                   cp0_we_i,
+	input  wire [`REG_ADDR_BUS]   cp0_waddr_i,
+	input  wire [`REG_BUS     ]   cp0_wdata_i,
+	input  wire                   wb2mem_cp0_we,
+	input  wire [`REG_ADDR_BUS]   wb2mem_cp0_wa,
+	input  wire [`REG_BUS     ]   wb2mem_cp0_wd,
+	
+	input  wire [`INST_ADDR_BUS]  mem_pc_i,
+	input  wire                   mem_in_delay_i,
+	input  wire [`EXC_CODE_BUS ]  mem_exccode_i,
+
+	input  wire [`WORD_BUS     ]  cp0_status,
+	input  wire [`WORD_BUS     ]  cp0_cause,
 	
 	output wire                   cp0_we_o,
 	output wire [`REG_ADDR_BUS]   cp0_waddr_o,
@@ -53,8 +47,33 @@ module mem_stage (
 	output wire [`INST_ADDR_BUS]  mem_pc_o,
 	output wire                   mem_in_delay_o,
 	output wire [`EXC_CODE_BUS ]  mem_exccode_o,
-	output wire [`INST_ADDR_BUS ] cp0_badvaddr
+	
+	input wire        data_req_i     ,
+    input wire        data_wr_i      ,
+    input wire [31:0] data_addr_i    ,
+    input wire [31:0] dm_i           ,
+    input wire         stallreq_mem_i,
+    
+    output wire        data_req_o     ,
+    output wire        data_wr_o      ,
+    output wire [1 :0] data_size_o    ,
+    output wire [31:0] data_addr_o    ,
+    output wire [31:0] dm_o           ,
+    output wire [31:0] data_wdata_o   ,
+    output wire         stallreq_mem_o
     );
+	wire [3:0  ]                 we;
+	wire [`REG_BUS 	    ] 		din;
+//	wire [`REG_BUS       ]       daddr;
+    
+    assign stallreq_mem_o = (mem_exccode_o == `EXC_NONE) ? stallreq_mem_i : 1'b0;
+    assign data_req_o = (mem_exccode_o == `EXC_NONE) ? data_req_i : 1'b0;
+    assign data_wr_o = (mem_exccode_o == `EXC_NONE) ? data_wr_i : 1'b0;
+    assign data_size_o = (data_wr_i == 1'b0) ? ((dre == 4'b1111) ? 2'b10 : (dre == 4'b1100 || dre == 4'b0011) ? 2'b01 : 2'b00) : 
+                                               ((we == 4'b1111) ? 2'b10 : (we == 4'b1100 || we == 4'b0011) ? 2'b01 : 2'b00);
+    assign data_addr_o = (mem_exccode_o == `EXC_NONE) ? data_addr_i : `ZERO_WORD;
+    assign dm_o = dm_i;
+    assign data_wdata_o = (mem_exccode_o == `EXC_NONE) ? din : `ZERO_WORD;
 
     // 如果当前不是访存指令，则只需要把从执行阶段获得的信息直接输出
     assign mem_wa_o     = (cpu_rst_n == `RST_ENABLE) ? 5'b0:mem_wa_i;
@@ -62,7 +81,7 @@ module mem_stage (
     assign mem_dreg_o   = (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_wd_i;
 	assign mem_whilo_o 	= (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_whilo_i;
 	assign mem_hilo_o 	= (cpu_rst_n == `RST_ENABLE) ? 64'b0:mem_hilo_i;
-	assign daddr		= (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD : (32'h1fffffff&mem_wd_i);
+//	assign daddr		= (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD : (32'h1fffffff&mem_wd_i);
 	assign mem_mreg_o	= (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_mreg_i;
 	
 	//mem前推给id
@@ -70,63 +89,47 @@ module mem_stage (
 	assign mem2id_wreg_o   = (cpu_rst_n == `RST_ENABLE) ? 1'b0:mem_wreg_i;
 	assign mem2id_wa_o     = (cpu_rst_n == `RST_ENABLE) ? 5'b0:mem_wa_i;
 	
-    assign mem_aluop_o = (cpu_rst_n == `RST_ENABLE) ? 8'b0 : mem_aluop_i;	
-	
-	// 将引发地址错误异常的地址送到BadVaddr  
-    assign cp0_badvaddr = (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD :
-                          (mem_exccode_o == `EXC_ADES || mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] == 2'b00) ? daddr :
-                          (mem_exccode_o == `EXC_ADEL && mem_pc_i[1:0] != 2'b00) ? mem_pc_i : `ZERO_WORD; 
-	
-	assign dce = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	( (mem_exccode_i == `EXC_NONE && mem_exccode_o == `EXC_NONE) &&
-	((mem_aluop_i == `MINIMIPS32_SB)
-	| (mem_aluop_i == `MINIMIPS32_SW)
-	| (mem_aluop_i == `MINIMIPS32_SH)
-	| (mem_aluop_i == `MINIMIPS32_LB)
-	| (mem_aluop_i == `MINIMIPS32_LBU)
-	| (mem_aluop_i == `MINIMIPS32_LH)
-	| (mem_aluop_i == `MINIMIPS32_LHU)
-	| (mem_aluop_i == `MINIMIPS32_LW)));
+    assign mem_aluop_o = (cpu_rst_n == `RST_ENABLE) ? 8'b0 : mem_aluop_i;
 	
 	assign dre[3] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(daddr[1:0] == 2'b00))	
-		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(daddr[1:0] == 2'b00))
+	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(data_addr_i[1:0] == 2'b00))	
+		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(data_addr_i[1:0] == 2'b00))
 		            |(mem_aluop_i == `MINIMIPS32_LW));
 		
 	assign dre[2] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(daddr[1:0] == 2'b01))	
-		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(daddr[1:0] == 2'b00))
+	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(data_addr_i[1:0] == 2'b01))	
+		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(data_addr_i[1:0] == 2'b00))
 		            |(mem_aluop_i == `MINIMIPS32_LW));
 		
 	assign dre[1] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(daddr[1:0] == 2'b10))	
-		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(daddr[1:0] == 2'b10))
+	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(data_addr_i[1:0] == 2'b10))	
+		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(data_addr_i[1:0] == 2'b10))
 		            |(mem_aluop_i == `MINIMIPS32_LW));
 		
 	assign dre[0] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(daddr[1:0] == 2'b11))	
-		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(daddr[1:0] == 2'b10))
+	                ((( (mem_aluop_i == `MINIMIPS32_LBU)|(mem_aluop_i == `MINIMIPS32_LB) )&(data_addr_i[1:0] == 2'b11))	
+		            |(( (mem_aluop_i == `MINIMIPS32_LHU)|(mem_aluop_i == `MINIMIPS32_LH) )&(data_addr_i[1:0] == 2'b10))
 		            |(mem_aluop_i == `MINIMIPS32_LW));
 		
 	
-	assign we[0] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
-	               (((mem_aluop_i == `MINIMIPS32_SB)&(daddr[1:0] == 2'b00))
-	               |((mem_aluop_i == `MINIMIPS32_SH)&(daddr[1:0] == 2'b00))
-		           |(mem_aluop_i == `MINIMIPS32_SW));
-		
-	assign we[1] = (cpu_rst_n == `RST_ENABLE) ? 1'b0:
-	               (((mem_aluop_i == `MINIMIPS32_SB)&(daddr[1:0] == 2'b01))	
-		           |((mem_aluop_i == `MINIMIPS32_SH)&(daddr[1:0] == 2'b00))
+	assign we[3] = (cpu_rst_n == `RST_ENABLE) ? 1'b0 :
+	               (((mem_aluop_i == `MINIMIPS32_SB)&(data_addr_i[1:0] == 2'b00))
+	               |((mem_aluop_i == `MINIMIPS32_SH)&(data_addr_i[1:0] == 2'b00))
 		           |(mem_aluop_i == `MINIMIPS32_SW));
 		
 	assign we[2] = (cpu_rst_n == `RST_ENABLE) ? 1'b0:
-	               (((mem_aluop_i == `MINIMIPS32_SB)&(daddr[1:0] == 2'b10))	
-		           |((mem_aluop_i == `MINIMIPS32_SH)&(daddr[1:0] == 2'b10))
+	               (((mem_aluop_i == `MINIMIPS32_SB)&(data_addr_i[1:0] == 2'b01))	
+		           |((mem_aluop_i == `MINIMIPS32_SH)&(data_addr_i[1:0] == 2'b00))
 		           |(mem_aluop_i == `MINIMIPS32_SW));
 		
-	assign we[3] = (cpu_rst_n == `RST_ENABLE) ? 1'b0:
-	               (((mem_aluop_i == `MINIMIPS32_SB)&(daddr[1:0] == 2'b11))	
-		           |((mem_aluop_i == `MINIMIPS32_SH)&(daddr[1:0] == 2'b10))
+	assign we[1] = (cpu_rst_n == `RST_ENABLE) ? 1'b0:
+	               (((mem_aluop_i == `MINIMIPS32_SB)&(data_addr_i[1:0] == 2'b10))	
+		           |((mem_aluop_i == `MINIMIPS32_SH)&(data_addr_i[1:0] == 2'b10))
+		           |(mem_aluop_i == `MINIMIPS32_SW));
+		
+	assign we[0] = (cpu_rst_n == `RST_ENABLE) ? 1'b0:
+	               (((mem_aluop_i == `MINIMIPS32_SB)&(data_addr_i[1:0] == 2'b11))	
+		           |((mem_aluop_i == `MINIMIPS32_SH)&(data_addr_i[1:0] == 2'b10))
 		           |(mem_aluop_i == `MINIMIPS32_SW));
 	
 	wire[`WORD_BUS] din_reverse = mem_din_i;
@@ -163,10 +166,10 @@ module mem_stage (
 	assign mem_exccode_o = (cpu_rst_n == `RST_ENABLE) ? `EXC_NONE : 
 	                     (mem_exccode_i != `EXC_NONE) ? mem_exccode_i:
 	                     ((status[15 : 8] & cause[15 : 8]) != 8'h00 && status[1] == 1'b0 && status[0] == 1'b1) ? `EXC_INT :
-	                     ((mem_aluop_i == `MINIMIPS32_LH || mem_aluop_i == `MINIMIPS32_LHU) && daddr[0] != 1'b0) ? `EXC_ADEL:
-	                     ( mem_aluop_i == `MINIMIPS32_LW  && daddr[1:0] != 2'b00 ) ? `EXC_ADEL:
-	                     ( mem_aluop_i == `MINIMIPS32_SW  && daddr[1:0] != 2'b00 ) ? `EXC_ADES:
-	                     ( mem_aluop_i == `MINIMIPS32_SH  && daddr[0] != 1'b0 )  ? `EXC_ADES:
+	                     ((mem_aluop_i == `MINIMIPS32_LH || mem_aluop_i == `MINIMIPS32_LHU) && data_addr_i[0] != 1'b0) ? `EXC_ADEL:
+	                     ( mem_aluop_i == `MINIMIPS32_LW  && data_addr_i[1:0] != 2'b00 ) ? `EXC_ADEL:
+	                     ( mem_aluop_i == `MINIMIPS32_SW  && data_addr_i[1:0] != 2'b00 ) ? `EXC_ADES:
+	                     ( mem_aluop_i == `MINIMIPS32_SH  && data_addr_i[0] != 1'b0 )  ? `EXC_ADES:
 	                     mem_exccode_i;
 	assign mem_pc_o     = (cpu_rst_n == `RST_ENABLE) ? `PC_INIT : mem_pc_i;
 

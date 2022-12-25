@@ -21,7 +21,7 @@ module idexe_reg (
 	input wire [`REG_ADDR_BUS ]	   id_cp0_addr,
 	input  wire 			       id_in_delay,
 	input wire [`INST_ADDR_BUS]    id_pc,
-	input wire 				       next_delay_i,
+	/* input wire 				       next_delay_i, */
 	input wire [`EXC_CODE_BUS]	   id_exccode,
 	input wire 				       flush,
 	
@@ -29,7 +29,7 @@ module idexe_reg (
 	output reg [`REG_ADDR_BUS ]	  exe_cp0_addr,
     output reg [`INST_ADDR_BUS]   exe_pc,
     output reg 			          exe_in_delay,
-    output reg 				      next_delay_o,
+    /* output reg 				      next_delay_o, */
     output reg [`EXC_CODE_BUS]	  exe_exccode,
     
     // ����ִ�н׶ε���Ϣ
@@ -61,7 +61,7 @@ module idexe_reg (
 			exe_cp0_addr       <= `REG_NOP;
 			exe_pc             <= `PC_INIT;
 			exe_in_delay       <= 1'b0;
-			next_delay_o       <= 1'b0;
+			/* next_delay_o       <= 1'b0; */
 			exe_exccode        <= `EXC_NONE;
 			
         end
@@ -77,9 +77,9 @@ module idexe_reg (
 		  	  exe_whilo		   <= `WRITE_DISABLE;
 		  	  exe_ret_addr     <= `ZERO_WORD;
 			exe_cp0_addr       <= `REG_NOP;
-			exe_pc             <= `PC_INIT;
+			exe_pc             <= `PC_INIT; // id_pc ?
 			exe_in_delay       <= 1'b0;
-			next_delay_o       <= 1'b0;
+			/* next_delay_o       <= 1'b0; */
 			exe_exccode        <= `EXC_NONE;
 		end
         // ����������׶ε���Ϣ�Ĵ沢����ִ�н׶�?
@@ -97,7 +97,7 @@ module idexe_reg (
 			exe_cp0_addr       <= id_cp0_addr ;
 			exe_pc             <= id_pc;
 			exe_in_delay       <= id_in_delay;
-			next_delay_o       <= next_delay_i;
+			/* next_delay_o       <= next_delay_i; */
 			exe_exccode        <= id_exccode;
 			
         end

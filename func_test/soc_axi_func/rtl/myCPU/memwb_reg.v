@@ -34,7 +34,12 @@ module memwb_reg (
 	
 	output reg                    wb_cp0_we,
 	output reg  [`REG_ADDR_BUS]   wb_cp0_waddr,
-	output reg  [`REG_BUS     ]   wb_cp0_wdata
+	output reg  [`REG_BUS     ]   wb_cp0_wdata,
+	
+	input  wire [`STALL_BUS    ]   stall,
+    
+    input wire [`REG_BUS]         dm_i,
+    output reg [`REG_BUS]          dm_o
     );
 
     always @(posedge cpu_clk_50M) begin
@@ -53,9 +58,10 @@ module memwb_reg (
 			wb_cp0_we   <= `FALSE_V;
 			wb_cp0_waddr<= `ZERO_WORD;
 			wb_cp0_wdata<= `ZERO_WORD;
+			dm_o         <=  `ZERO_WORD;
 		end
 		// 将来自访存阶段的信息寄存并送至写回阶段
-		else begin
+		else if (stall[4] == `NOSTOP) begin
 		    wb_aluop    <= mem_aluop;
 			wb_wa 	    <= mem_wa;
 			wb_wreg     <= mem_wreg;
@@ -69,6 +75,7 @@ module memwb_reg (
 			wb_cp0_we   <= mem_cp0_we;
 			wb_cp0_waddr<= mem_cp0_waddr;
 			wb_cp0_wdata<= mem_cp0_wdata;
+			dm_o         <=  dm_i;
 		end
 	end
 

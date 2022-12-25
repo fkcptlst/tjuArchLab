@@ -60,7 +60,7 @@ THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //2. usually, please define SIMU_USE_PLL=0 to speed up simulation by assign
 //   cpu_clk=clk, sys_clk = clk.
 //   at this time, frequency of cpu_clk is 91MHz.
-`define SIMU_USE_PLL 0 //set 0 to speed up simulation
+`define SIMU_USE_PLL 1 //set 0 to speed up simulation
 
 module soc_axi_lite_top #(parameter SIMULATION=1'b0)
 (
@@ -70,14 +70,14 @@ module soc_axi_lite_top #(parameter SIMULATION=1'b0)
 
     //------gpio-------
     output [7:0] led,
-    output [1 :0] led_rg0,
-    output [1 :0] led_rg1,
+    /* output [1 :0] led_rg0, */
+    /* output [1 :0] led_rg1, */
     output [7 :0] num_csn,
     output [6 :0] num_a_g,
-    input  [7 :0] switch, 
-    output [3 :0] btn_key_col,
-    input  [3 :0] btn_key_row,
-    input  [1 :0] btn_step
+    input  [7 :0] switch
+    /* output [3 :0] btn_key_col, */
+    /* input  [3 :0] btn_key_row, */
+    /* input  [1 :0] btn_step */
 );
 //debug signals
 wire [31:0] debug_wb_pc;
@@ -728,14 +728,14 @@ confreg #(.SIMULATION(SIMULATION)) u_confreg
 
     .ram_random_mask ( ram_random_mask ),
     .led         ( led        ),  // o, 16   
-    .led_rg0     ( led_rg0    ),  // o, 2      
-    .led_rg1     ( led_rg1    ),  // o, 2      
+    /* .led_rg0     ( led_rg0    ),  // o, 2       */
+    /* .led_rg1     ( led_rg1    ),  // o, 2       */
     .num_csn     ( num_csn    ),  // o, 8      
     .num_a_g     ( num_a_g    ),  // o, 7      
     .switch      ( switch     ),  // i, 8     
-    .btn_key_col ( btn_key_col),  // o, 4          
-    .btn_key_row ( btn_key_row),  // i, 4           
-    .btn_step    ( btn_step   )   // i, 2   
+//    .btn_key_col ( btn_key_col),  // o, 4          
+    .btn_key_row ( 4'd0 ),  // i, 4           
+    .btn_step    ( 2'd3   )   // i, 2   
 );
 
 endmodule

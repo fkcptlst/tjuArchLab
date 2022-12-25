@@ -4,5 +4,17 @@ func_test/soft_c/*
 func_test/soft_func/*
 func_test/soc_axi_func/testbench/*
 func_test/soc_axi_func/run_vivado/*
+
+# VirtualBox
 virtualbox/.vagrant/
 virtualbox/cache/mips-2013.05-65-mips-sde-elf.bin
+
+# For Vagrant
+cache/*
+data/*
+Share/*
+
+# clash
+clash
+Clash*
+neofetch*

@@ -59,13 +59,12 @@ module id_stage(
     output wire[`INST_ADDR_BUS]   jump_addr_1,
     output wire[`INST_ADDR_BUS]   jump_addr_2,
     output wire[`INST_ADDR_BUS]   jump_addr_3,
-    output wire[1:0]              jtsel,
-    
-    output wire                   pre_flush_o
+    output wire[1:0]              jtsel
     );
     
-    // ????§³????????????
-    wire [`INST_BUS] id_inst = (flush_im == 1'b1)?`ZERO_WORD:{id_inst_i[7:0], id_inst_i[15:8], id_inst_i[23:16], id_inst_i[31:24]};
+    // ï¿½ï¿½ï¿½ï¿½Ð¡ï¿½ï¿½Ä£Ê½ï¿½ï¿½Ö¯Ö¸ï¿½ï¿½ï¿½ï¿½
+//    wire [`INST_BUS] id_inst = (flush_im == 1'b1)?`ZERO_WORD:{id_inst_i[7:0], id_inst_i[15:8], id_inst_i[23:16], id_inst_i[31:24]};
+    wire [`INST_BUS] id_inst = (flush_im == 1'b1)?`ZERO_WORD:id_inst_i;
 
     // ?????????§Ú?????¦Å????
     wire [5 :0] op   = id_inst[31:26];
@@ -133,8 +132,6 @@ module id_stage(
 	wire inst_mflo  = inst_reg & ~func[5] & func[4] & ~func[3] & ~func[2] & func[1] & ~func[0];//010_010
 	wire inst_mthi  = inst_reg & ~func[5] & func[4] & ~func[3] & ~func[2] & ~func[1] & func[0];//010_001
 	wire inst_mtlo  = inst_reg & ~func[5] & func[4] & ~func[3] & ~func[2] & func[1] & func[0];//010_011
-	wire inst_div = inst_reg & ~func[5] & func[4] & func[3] & ~func[2] & func[1] & ~func[0];
-	wire inst_divu = inst_reg & ~func[5] & func[4] & func[3] & ~func[2] & func[1] & func[0];
 	
 
 	wire inst_lb =  op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & ~op[0];//100_000
@@ -156,7 +153,7 @@ module id_stage(
 	wire inst_bgez = ~op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & op[0]& rt[0]& ~rt[4];//000_001 >>
 	wire inst_bgtz = ~op[5] & ~op[4] & ~op[3] & op[2] &  op[1] &  op[0];//000_111
 	wire inst_blez = ~op[5] & ~op[4] & ~op[3] & op[2] &  op[1] & ~op[0];//000_110
-	wire inst_bltz = ~op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & op[0]& ~rt[0]& ~rt[4];//000_001 >>??????????????
+	wire inst_bltz = ~op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & op[0]& ~rt[0]& ~rt[4];//000_001 >>ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½
 	wire inst_bgezal = ~op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & op[0]& rt[0]&rt[4];//000_001 >>
 	wire inst_bltzal = ~op[5] & ~op[4] & ~op[3] & ~op[2] & ~op[1] & op[0]& ~rt[0]&rt[4];//000_001 >>
 	wire inst_j = ~op[5] & ~op[4] & ~op[3] & ~op[2] &  op[1] & ~op[0];//000_010
@@ -289,8 +286,8 @@ module id_stage(
     
     
                                             
-
     assign id_wa_o   = (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD:(jal == 1'b1)? 5'b11111 :(rtsel == `RTSEL_ENABLE || inst_mfc0) ?	rt	: rd;
+
     assign id_src1_o = (cpu_rst_n == `RST_ENABLE) ? `ZERO_WORD:
                        (rreg1 == `READ_ENABLE ) ? ((fwrd1 == 2'b01 ) ? exe2id_wd_i:
                                                    (fwrd1 == 2'b10 ) ? mem2id_wd_i : rd1) :

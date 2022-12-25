@@ -483,9 +483,9 @@ assign ram_random_mask[4] = (pseudo_random_23[ 6]^pseudo_random_23[16]) & (short
 //--------------------------------{led}begin-----------------------------//
 //led display
 //led_data[31:0]
-wire write_led = conf_we & (conf_addr[15:0]==`LED_ADDR);
+(*mark_debug = "true"*)wire write_led = conf_we & (conf_addr[15:0]==`LED_ADDR);
 
-//assign led = led_data[7:0];
+assign led = led_data[7:0];
 
 assign switch_seed = {{2{switch[7]}},{2{switch[6]}},{2{switch[5]}},{2{switch[4]}},
                     {2{switch[3]}},{2{switch[2]}},{2{switch[1]}},{2{switch[0]}}};

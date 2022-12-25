@@ -14,9 +14,9 @@ module cp0(
     input   wire [`INST_ADDR_BUS]   pc_i,
     input   wire                    in_delay_i,
     input   wire [`EXC_CODE_BUS ]   exccode_i,
-    input   wire  [`INST_ADDR_BUS]  badvaddr_i,
+    /* input   wire  [`INST_ADDR_BUS]  badvaddr_i, */
     
-    input   wire [`INST_ADDR_BUS]   pc_next_i,
+    /* input   wire [`INST_ADDR_BUS]   pc_next_i, */
     
     output  wire                    flush,   
     output  reg                     flush_im,
@@ -32,7 +32,7 @@ module cp0(
     reg [`REG_BUS] cause;           //CP0的Cause寄存器
     reg [`REG_BUS] epc;             //CP0的EPC寄存器
     
-    reg in_delay_exc;
+    /* reg in_delay_exc; */
 
     assign status_o = status;
     assign cause_o = cause;
@@ -71,7 +71,7 @@ module cp0(
     endtask
     
     task do_eret();begin
-        status[1]  <=  1'b0;
+        status[1]  <=  0;
     end
     endtask
     
@@ -82,7 +82,7 @@ module cp0(
                          (exccode_i == `EXC_ERET  &&  waddr == `CP0_EPC && we == `WRITE_ENABLE) ? wdata:
                          (exccode_i == `EXC_ERET) ? epc:
                          (exccode_i != `EXC_NONE)    ?  `EXC_ADDR  :  `ZERO_WORD;
-/*
+     
      //更新CP0寄存器数据
      always @ (posedge cpu_clk_50M) begin
         if(cpu_rst_n == `RST_ENABLE) begin
@@ -120,37 +120,6 @@ module cp0(
             endcase
         end
      end
-*/
-    // 更新CP0寄存器数据
-    always @ (posedge cpu_clk_50M) begin
-		if(cpu_rst_n == `RST_ENABLE) begin
-            badvaddr 	  <= `ZERO_WORD;
-            status 	      <= 32'h10000000;              // status[28]为1，表示使能CP0协处理器
-//            cause         <= {25'b0, `EXC_NONE, 2'b0};
-            cause         <= `ZERO_WORD;
-            epc 		  <= `ZERO_WORD;
-		end 
-        else begin
-//            cause[15:10] <= int_i;
-            case (exccode_i)
-                `EXC_NONE:       // 无异常发生时，判断是否为写寄存器指令，写入数据
-                    if (we == `WRITE_ENABLE) begin
-                        case(waddr)
-                            `CP0_BADVADDR : badvaddr <= wdata;
-                            `CP0_STATUS : status <= wdata;
-//                            `CP0_STATUS : status <= begin status[15: 8] <= wdata[15: 8]; status[1: 0] <= wdata[1: 0]; end
-                            `CP0_CAUSE : cause <= wdata;
-//                            `CP0_CAUSE : cause <= cause[9:8] <= wdata[9:8];
-                            `CP0_EPC: epc <= wdata;
-                        endcase
-                    end
-                `EXC_ERET:       // ERET指令
-                    do_eret();
-                default:        // 异常发生时，处理对应异常
-                    do_exc();
-            endcase
-        end
-    end
      
      //CP0中的寄存器
      assign data_o  = (cpu_rst_n == `RST_ENABLE)    ?   `ZERO_WORD:
