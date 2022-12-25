@@ -66,7 +66,7 @@ module cp0(
         end
         status[1]   <= 1'b1;
         cause[6:2]  <= exccode_i;
-        badvaddr   <= badvaddr_i;
+        /* badvaddr   <= badvaddr_i; */
     end
     endtask
     
