@@ -9,11 +9,13 @@ virtualbox/.vagrant/
 virtualbox/cache/mips-2013.05-65-mips-sde-elf.bin
 
 # For Vagrant
-cache/*
-data/*
-Share/*
+virtualbox/cache/
+virtualbox/data/
+virtualbox/Share/
 
 # clash
 clash
 Clash*
 neofetch*
+
+

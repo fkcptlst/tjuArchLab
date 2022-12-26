@@ -64,6 +64,7 @@ begin
     clk = 1'b0;
     resetn = 1'b0;
     #2000;
+    $display("---[%t] Should Start Changing" ,$time);
     resetn = 1'b1;
 end
 always #5 clk=~clk;
@@ -205,6 +206,10 @@ begin
             $display("----[%t] Number 8'd%02d Functional Test Point PASS!!!", $time, confreg_num_reg[31:24]);
         end
     end
+//    else
+//    begin
+//      $display("---[%t] Should Not be here!",$time);
+//    end
 end
 
 //monitor test
