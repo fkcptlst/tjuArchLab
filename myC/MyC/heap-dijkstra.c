@@ -1,3 +1,14 @@
+/**
+ * @file heap-dijktra.c
+ * @brief Heap Dijkstra C Program includes:
+ *    - Min Heap Binary Tree 
+ *    - Dijkstra 
+ *    - Map based on List Storage Method
+ * @author Christopher
+ * @version 1.0
+ * @date 2022-12-26
+ */
+
 #include "soc_io.h"
 
 #define N 100

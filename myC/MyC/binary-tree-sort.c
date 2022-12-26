@@ -1,6 +1,6 @@
 /**
  * @file main.c
- * @brief 二叉树排序
+ * @brief Binary Tree Sort -- N*Log_2(N)
  * @author Christopher Liu
  * @version 1.0
  * @date 2022-12-26
@@ -31,10 +31,10 @@ int lson(int root){
 
 /**
  * @brief insert into tree
- * 	1. lson < root && rson > root
- * 	2. root initial = 1;
+ * 	1. lson < root < rson 
+ * 	2. root initial = 0;
  *
- * @param x 	-> tree
+ * @param x 	  -> data
  * @param root 	-> current node id
  */
 void insert(int x, int root){
@@ -46,6 +46,11 @@ void insert(int x, int root){
 	else insert(x, lson(root));
 }
 
+/**
+ * @brief head-second method
+ *
+ * @param root
+ */
 void recover(int root){
 	if(tree[root].l) recover(tree[root].l);
 	ans[ans_cnt++] = tree[root].x;

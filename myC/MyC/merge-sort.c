@@ -1,3 +1,11 @@
+/**
+ * @file merge-sort.c
+ * @brief Merge sort c implementation
+ * @author Christopher
+ * @version 1.0
+ * @date 2022-12-26
+ */
+
 #include "soc_io.h"
 
 #define N 100
