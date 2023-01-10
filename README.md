@@ -1,1 +1,5 @@
-The quick brown fox jumps over a lazy dog.
+- soc_sram_lite_mycpu: 存放soc_sram_lite的mycpu
+- TEMU：temu仿真器
+- soft_c：包含原有的和自己额外编写的C程序测试
+- soft_c_bit: 比特流文件
+- lab_123_coe: 前几个实验的coe文件
